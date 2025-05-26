@@ -65,8 +65,12 @@ class _SignupScreenState extends State<SignupScreen> {
           MaterialPageRoute(
             builder:
                 (context) => UserDetailsScreen(
-                  userId: userId,
-                  token: token ?? '', // may be null, that’s okay
+                  userId: userId ?? '',
+                  token: token ?? '',
+                  name: _nameController.text.trim(),
+                  password: _passwordController.text,
+                  email:
+                      _emailController.text.trim(), // may be null, that’s okay
                 ),
           ),
         );

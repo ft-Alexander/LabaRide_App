@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:convert';
 import 'signupcomplete.dart';
 import '../../shop/AuthenticationShop/registershop.dart';
@@ -9,8 +10,18 @@ import '../../../supabase_config.dart';
 class UserDetailsScreen extends StatefulWidget {
   final String userId;
   final String token;
+  final String name;
+  final String password;
+  final String email;
 
-  const UserDetailsScreen({super.key, required this.userId, this.token = ''});
+  const UserDetailsScreen({
+    super.key,
+    required this.userId,
+    this.token = '',
+    required this.name,
+    required this.password,
+    required this.email,
+  });
 
   @override
   State<UserDetailsScreen> createState() => _UserDetailsScreenState();
@@ -87,16 +98,19 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final response = await http.put(
-        Uri.parse(
-          '${SupabaseConfig.apiUrl}/update_user_details/${widget.userId}',
-        ),
+      final response = await http.post(
+        Uri.parse('${SupabaseConfig.apiUrl}/users'), // rest/v1/users
         headers: {
+          'apikey': SupabaseConfig.anonKey,
+          'Authorization': 'Bearer ${widget.token}',
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'Authorization': 'Bearer ${widget.token}',
         },
         body: jsonEncode({
+          'auth_user_id': widget.userId,
+          'name': widget.name,
+          'email': widget.email,
+          'password': widget.password,
           'phone': _phoneController.text.trim(),
           'birthdate': _birthdateController.text,
           'gender': selectedGender,
@@ -107,8 +121,8 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
         }),
       );
 
-      print('Debug - Response Status: ${response.statusCode}');
-      print('Debug - Response Body: ${response.body}');
+      // print('Response status: ${response.statusCode}');
+      // print('Response body: ${response.body}');
 
       final responseData = jsonDecode(response.body);
 
