@@ -7,14 +7,10 @@ import '../../shop/AuthenticationShop/registershop.dart';
 import '../../../supabase_config.dart';
 
 class UserDetailsScreen extends StatefulWidget {
-  final int userId;
+  final String userId;
   final String token;
 
-  const UserDetailsScreen({
-    super.key,
-    required this.userId,
-    this.token = '', 
-  });
+  const UserDetailsScreen({super.key, required this.userId, this.token = ''});
 
   @override
   State<UserDetailsScreen> createState() => _UserDetailsScreenState();
@@ -44,10 +40,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
         children: [
           Row(
             children: [
-              const Icon(
-                Icons.store_outlined,
-                color: Color(0xFF375DFB),
-              ),
+              const Icon(Icons.store_outlined, color: Color(0xFF375DFB)),
               const SizedBox(width: 8),
               const Expanded(
                 child: Text(
@@ -95,7 +88,9 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
 
     try {
       final response = await http.put(
-        Uri.parse('${SupabaseConfig.apiUrl}/update_user_details/${widget.userId}'),
+        Uri.parse(
+          '${SupabaseConfig.apiUrl}/update_user_details/${widget.userId}',
+        ),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -112,8 +107,8 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
         }),
       );
 
-    print('Debug - Response Status: ${response.statusCode}');
-    print('Debug - Response Body: ${response.body}');
+      print('Debug - Response Status: ${response.statusCode}');
+      print('Debug - Response Body: ${response.body}');
 
       final responseData = jsonDecode(response.body);
 
@@ -121,15 +116,14 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
         if (!mounted) return;
 
         if (_wantToCreateShop) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => RegisterShop(
-                userId: widget.userId,
-                token: widget.token,
-              ),
-            ),
-          );
+          // Navigator.pushReplacement(
+          //   context,
+          //   MaterialPageRoute(
+          //     builder:
+          //         (context) =>
+          //             RegisterShop(userId: widget.userId, token: widget.token),
+          //   ),
+          // );
         } else {
           // Navigate to SignUpCompleteScreen first
           Navigator.pushReplacement(
@@ -140,13 +134,15 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
           );
         }
       } else {
-        throw Exception(responseData['message'] ?? 'Failed to update user details');
+        throw Exception(
+          responseData['message'] ?? 'Failed to update user details',
+        );
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -228,14 +224,14 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      
+
                       _buildLabeledField(
                         'Contact Number',
                         'Enter contact number',
                         controller: _phoneController,
                         prefix: '+63',
                       ),
-                      
+
                       _buildLabeledField(
                         'Birthdate',
                         'MM/DD/YYYY',
@@ -268,11 +264,27 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                       ),
                       const SizedBox(height: 16),
 
-                      _buildLabeledField('Zone Name', 'Enter zone', controller: _zoneController),
-                      _buildLabeledField('Street Name', 'Enter street name', controller: _streetController),
-                      _buildLabeledField('Barangay Name', 'Enter barangay name', controller: _barangayController),
-                      _buildLabeledField('Building Name (Optional)', 'Enter building name', controller: _buildingController),
-                      
+                      _buildLabeledField(
+                        'Zone Name',
+                        'Enter zone',
+                        controller: _zoneController,
+                      ),
+                      _buildLabeledField(
+                        'Street Name',
+                        'Enter street name',
+                        controller: _streetController,
+                      ),
+                      _buildLabeledField(
+                        'Barangay Name',
+                        'Enter barangay name',
+                        controller: _barangayController,
+                      ),
+                      _buildLabeledField(
+                        'Building Name (Optional)',
+                        'Enter building name',
+                        controller: _buildingController,
+                      ),
+
                       const SizedBox(height: 24),
                       _buildShopOption(),
                       const SizedBox(height: 32),
@@ -289,17 +301,22 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                             ),
                             elevation: 0,
                           ),
-                          child: _isLoading
-                              ? const CircularProgressIndicator(color: Colors.white)
-                              : Text(
-                                  _wantToCreateShop ? 'Next: Shop Setup' : 'Complete Registration',
-                                  style: const TextStyle(
+                          child:
+                              _isLoading
+                                  ? const CircularProgressIndicator(
                                     color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    fontFamily: 'Inter',
+                                  )
+                                  : Text(
+                                    _wantToCreateShop
+                                        ? 'Next: Shop Setup'
+                                        : 'Complete Registration',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: 'Inter',
+                                    ),
                                   ),
-                                ),
                         ),
                       ),
                     ],
@@ -313,7 +330,8 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
     );
   }
 
-  Widget _buildInputField(String hint, {
+  Widget _buildInputField(
+    String hint, {
     String? prefix,
     IconData? suffixIcon,
     TextEditingController? controller,
@@ -339,9 +357,10 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
           fontSize: 16,
           fontFamily: 'Inter',
         ),
-        suffixIcon: suffixIcon != null 
-            ? Icon(suffixIcon, color: Colors.grey[400], size: 20)
-            : null,
+        suffixIcon:
+            suffixIcon != null
+                ? Icon(suffixIcon, color: Colors.grey[400], size: 20)
+                : null,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -371,14 +390,13 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
             'Select gender',
             style: TextStyle(color: Colors.grey[400]),
           ),
-          items: ['Male', 'Female', 'Other']
-              .map((String value) {
+          items:
+              ['Male', 'Female', 'Other'].map((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(value),
                 );
-              })
-              .toList(),
+              }).toList(),
           onChanged: (String? newValue) {
             setState(() {
               selectedGender = newValue;
